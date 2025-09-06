@@ -1,0 +1,15 @@
+void my_strcpy(char* dest, const char* str);
+void my_strncpy(char* dest, const char* str, size_t n);
+char* my_strcat(char* dest, const char* str);
+char* my_strncat(char* dest, const char* str, size_t n);
+int my_strcmp(const char* str1, const char* str2);
+int my_strncmp(const char* str1, const char* str2, size_t n);
+char* my_strchr(const char* str, int c);
+char* my_strrchr(char* str, int c);
+size_t my_strspn(const char* str, const char* allowed);
+size_t my_strcspn(const char* str, const char* not_allowed);
+char* my_fgets(char *s, int n, FILE *iop);
+int my_puts(char *s);
+char *my_strdup(char *s);
+int my_atoi(const char* str);
+ssize_t my_getline(char** lineptr, size_t* n, FILE* stream);
