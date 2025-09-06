@@ -3,18 +3,20 @@
 #include <assert.h>
 #include <string.h>
 
-#include "main.h"
+#include "string.h"
 
 
 
 
 int main() {
     char str1[] = "2345";
-    char str2[] = "aaaaaaaaaa";
+    char* str2 = (char*) calloc(100, 1);
+
+
     size_t size = 50;
     size_t* ptr = &size;
 
-    my_getline(&str2), ptr, stdin);
+    my_getline(&(str2), ptr, stdin);
 
     //strncpy(str2, str1, 4);
 
@@ -25,35 +27,31 @@ int main() {
 }
 
 
-void my_strcpy(char* dest, const char* str) {
+void my_strcpy(char* dest, const char* str) { //
     assert(dest != nullptr);
     assert(str  != nullptr);
 
     size_t i = 0;
+    char c = 0;
 
-    while (str[i] != '\0') {
-        dest[i] = str[i];
-        i++;
+    while (c = *(str + i++)) {
+        dest[i] = c
     }
 }
 
-void my_strncpy(char* dest, const char* str, size_t n) {
+void my_strncpy(char* dest, const char* str, size_t n) { //
     assert(dest != nullptr);
     assert(str  != nullptr);
 
     size_t ready = 0;
+    char c;
 
-    while (ready < n && str[ready] != '\0') {
-        dest[ready] = str[ready];
-        ready++;
+    while (ready < n && c = *(str + ready++)) {
+        dest[ready] = c;
     }
 
-    if (ready < n) {
-
-        while (ready < n) {
-            dest[ready] = '\0';
-            ready++;
-        }
+    while (ready++ < n) {
+        dest[ready] = '\0';
     }
 }
 
@@ -62,11 +60,12 @@ char* my_strcat(char* dest, const char* str) {
     assert(str  != nullptr);
 
     size_t pointer = 0;
+    char c = 0;
 
-    while (dest[pointer] != '\0') pointer++;
+    while (*(dest+pointer)) pointer++;
 
-    for (size_t i = pointer; str[i-pointer] != '\0'; i++) {
-        dest[i]  = str[i-pointer];
+    for (size_t i = pointer; c = str[i-pointer]; i++) {
+        dest[i]  = c;
     }
 
     return dest;
@@ -77,11 +76,12 @@ char* my_strncat(char* dest, const char* str, size_t n) {
     assert(str  != nullptr);
 
     size_t pointer = 0;
+    char c = 0;
 
-    while (dest[pointer] != '\0') pointer++;
+    while (*(dest+pointer)) pointer++;
 
-    for (size_t i = pointer; str[i-pointer] != '\0' && (i-pointer) < n; i++) {
-        dest[i]  = str[i-pointer];
+    for (size_t i = pointer; c = str[i-pointer] && (i-pointer) < n; i++) {
+        dest[i]  = c;
     }
 
     return dest;
@@ -91,9 +91,11 @@ int my_strcmp(const char* str1, const char* str2) {
     assert(str1 != nullptr);
     assert(str2 != nullptr);
 
-    for (size_t i = 0; str1[i] != '\0' || str2[i] != '\0'; i++) {
-        char c1 = str1[i];
-        char c2 = str2[i];
+    char c1 = 0;
+    char c2 = 0;
+
+    for (size_t i = 0; c1 = str1[i] && c2 = str2[i]; i++) {
+
 
         if (c1 < c2) {
             return -1;
@@ -111,9 +113,10 @@ int my_strncmp(const char* str1, const char* str2, size_t n) {
     assert(str1 != nullptr);
     assert(str2 != nullptr);
 
-    for (size_t i = 0; i < n && (str1[i] != '\0' || str2[i] != '\0'); i++) {//
-        char c1 = str1[i];
-        char c2 = str2[i];
+    char c1 = 0;
+    char c2 = 0;
+
+    for (size_t i = 0; i < n && c1 = str1[i] && c2 = str2[i]; i++) {
 
         if (c1 < c2) {
             return -1;
@@ -130,10 +133,10 @@ int my_strncmp(const char* str1, const char* str2, size_t n) {
 char* my_strchr(const char* str, int c) {
     assert(str != nullptr);
 
-    for (size_t i = 0; str[i] != '\0'; i++) {
+    while (*str++) {
 
-        if (str[i] == c) {
-            return (char*) str + i;
+        if (str == c) {
+            return (char*) str;
         }
     }
 
@@ -145,10 +148,10 @@ char* my_strrchr(const char* str, int c) {
 
     char* res = nullptr;
 
-    for (size_t i = 0; str[i] != '\0'; i++) {
+    while (*str++) {
 
-        if (str[i] == c) {
-            res = (char*) str + i;
+        if (str == c) {
+            res = (char*) str;
         }
     }
 
@@ -200,29 +203,25 @@ size_t my_strcspn(const char* str, const char* not_allowed) {
     return accepted_len;
 }
 
-char* my_fgets(char* str, int n, FILE* file_adr) {
-    assert(str      != nullptr);
-    assert(file_adr != nullptr);
+char* my_fgets(char* s, int n, FILE* iop) {
+    char* cs = s;
+    char c = 0;
 
-    int   c  = 0;
-    char *cs = str;
-
-    while (--n > 0 && (c = fgetc(file_adr)) != EOF) {
-
-        if ((*cs++ = c) == '\n' ) {
-            break;
-        }
+    while (--n > 0 && (c = fgetc(iop)) != EOF) {
+        *cs++ = c;
+        if (c == '\n') break;
     }
+
     *cs = '\0';
 
-    return (c == EOF && cs == str) ? NULL : str;
+    return (c == EOF && cs == s) ? nullptr : s;
 }
 
 int my_puts(char* str) {
     assert(str != nullptr);
 
-    for (size_t i = 0; str[i] != '\0'; i++) {
-        fputc(str[i], stdin);
+    while (*str++) {
+        fputc(*str, stdin);
     }
 
     fputc('\n', stdin);
@@ -235,7 +234,8 @@ char* my_strdup(char* s) {
     char* pointer = nullptr;
 
     pointer = (char*) calloc(strlen(s)+1, sizeof(s));
-    if (pointer != NULL) {
+
+    if (pointer != nullptr) {
         my_strcpy(pointer, s);
     }
 
@@ -246,12 +246,7 @@ int my_atoi(const char* str) {
     assert(str != nullptr);
 
     bool is_negative = 0;
-    int res = 0;
-    const char* allowed = " -0123456789";
-
-    if (strlen(str) != my_strspn(str, allowed)) {
-        return 0;
-    }
+    int  res         = 0;
 
     while (*str == ' ') {
         str++;
@@ -285,28 +280,21 @@ ssize_t my_getline(char** lineptr, size_t* n, FILE* stream) {
     size_t filled = 0;
 
     if (*lineptr == nullptr) {
-        *lineptr = (char*) calloc(100, 100);
+        *lineptr = (char*) calloc(100, 1);
         *n = 100;
     }
 
     while ((c = fgetc(stream)) != '\n') {
-        printf("%c\n", c);
-
-        printf("AAA1AAAAA\n");
 
         if (c == EOF) return -1;
-        printf("AAA2AAAAA\n");
 
-        //if (filled == *n) {
-        //    *lineptr = (char*) realloc(*lineptr, 2*filled);
-        //    *n *= 2;
-        //}
-        printf("AAAA3AAAA\n");
+        if (filled == *n) {
+            *lineptr = (char*) realloc(*lineptr, 2*filled);
+            *n *= 2;
+        }
 
         (*lineptr)[filled] = c;
         filled++;
-
-        printf("AAAA3fthtttAAAA\n");
     }
 
     (*lineptr)[filled]   = '\n';
@@ -314,6 +302,27 @@ ssize_t my_getline(char** lineptr, size_t* n, FILE* stream) {
 
     return filled;
 
+}
+
+size_t my_strlen(const char* s) {
+    size_t len = 0;
+
+    while (*s++) {
+        len++;
+    }
+
+    return len;
+}
+
+char* strstr(const char* haystack, const char* needle) {
+    size_t needle_length = strlen(needle);
+
+    while (*haystack++) {
+
+        if (!my_strncmp(haystack, needle, needle_length)) return haystack;
+    }
+
+    return nullptr;
 }
 
 
