@@ -1,3 +1,6 @@
+#define DEFAULT_BUFF 100
+#define MEMORY_MULTIPLICATION 2
+
 void my_strcpy(char* dest, const char* str);
 void my_strncpy(char* dest, const char* str, size_t n);
 char* my_strcat(char* dest, const char* str);
@@ -13,3 +16,5 @@ int my_puts(char *s);
 char *my_strdup(char *s);
 int my_atoi(const char* str);
 ssize_t my_getline(char** lineptr, size_t* n, FILE* stream);
+size_t my_strlen(const char* s);
+char* strstr(const char* haystack, const char* needle);

@@ -9,12 +9,12 @@
 
 
 int main() {
-    char str1[] = "2345";
-    char* str2 = (char*) calloc(100, 1);
+    char  str1[] = "2345";
+    char* str2   = (char*) calloc(100, 1);
 
 
-    size_t size = 50;
-    size_t* ptr = &size;
+    size_t  size = 50;
+    size_t* ptr  = &size;
 
     my_getline(&(str2), ptr, stdin);
 
@@ -27,31 +27,29 @@ int main() {
 }
 
 
-void my_strcpy(char* dest, const char* str) { //
+void my_strcpy(char* dest, const char* str) {
     assert(dest != nullptr);
     assert(str  != nullptr);
 
-    size_t i = 0;
     char c = 0;
 
-    while (c = *(str + i++)) {
-        dest[i] = c
+    for (size_t copied_el = 0; c = *(str + copied_el); copied_el++) {
+        *(dest + copied_el) = c;
     }
 }
 
-void my_strncpy(char* dest, const char* str, size_t n) { //
+void my_strncpy(char* dest, const char* str, size_t n) {
     assert(dest != nullptr);
     assert(str  != nullptr);
 
-    size_t ready = 0;
-    char c;
+    char c = 0;
 
-    while (ready < n && c = *(str + ready++)) {
-        dest[ready] = c;
+    for (size_t copied_el = 0; copied_el < n && c = *(str + copied_el); copied_el++) {
+        *(dest + copied_el) = c;
     }
 
-    while (ready++ < n) {
-        dest[ready] = '\0';
+    while (copied_el++ < n) {
+        *(dest + copied_el) = '\0';
     }
 }
 
@@ -59,13 +57,12 @@ char* my_strcat(char* dest, const char* str) {
     assert(dest != nullptr);
     assert(str  != nullptr);
 
-    size_t pointer = 0;
     char c = 0;
 
-    while (*(dest+pointer)) pointer++;
+    while (*dest++);
 
-    for (size_t i = pointer; c = str[i-pointer]; i++) {
-        dest[i]  = c;
+    for (size_t i = dest; c = *(str + i); i++) {
+        *i  = c;
     }
 
     return dest;
@@ -75,13 +72,12 @@ char* my_strncat(char* dest, const char* str, size_t n) {
     assert(dest != nullptr);
     assert(str  != nullptr);
 
-    size_t pointer = 0;
     char c = 0;
 
-    while (*(dest+pointer)) pointer++;
+    while (*dest++);
 
-    for (size_t i = pointer; c = str[i-pointer] && (i-pointer) < n; i++) {
-        dest[i]  = c;
+    for (size_t i = dest; c = *(str + i) && (i-dest) < n; i++) {
+        *i  = c;
     }
 
     return dest;
@@ -91,18 +87,16 @@ int my_strcmp(const char* str1, const char* str2) {
     assert(str1 != nullptr);
     assert(str2 != nullptr);
 
-    char c1 = 0;
-    char c2 = 0;
+    char c1    = 0;
+    char c2    = 0;
+    int  delta = 0;
 
-    for (size_t i = 0; c1 = str1[i] && c2 = str2[i]; i++) {
+    while (c1 = *str1++ && *str2++) {
 
+        delta = c1 - c2;
 
-        if (c1 < c2) {
-            return -1;
-        }
-
-        if (c1 > c2) {
-            return 1;
+        if (delta != 0) {
+            return delta;
         }
     }
 
@@ -113,17 +107,17 @@ int my_strncmp(const char* str1, const char* str2, size_t n) {
     assert(str1 != nullptr);
     assert(str2 != nullptr);
 
-    char c1 = 0;
-    char c2 = 0;
+    char   c1         = 0;
+    char   c2         = 0;
+    int    delta      = 0;
+    size_t checked_el = 0;
 
-    for (size_t i = 0; i < n && c1 = str1[i] && c2 = str2[i]; i++) {
+    for (checked_el < n && c1 = *str1++ && c2 = *str2++) {
 
-        if (c1 < c2) {
-            return -1;
-        }
+        delta = c1 - c2;
 
-        if (c1 > c2) {
-            return 1;
+        if (delta != 0) {
+            return delta;
         }
     }
 
@@ -135,7 +129,7 @@ char* my_strchr(const char* str, int c) {
 
     while (*str++) {
 
-        if (str == c) {
+        if (*str == c) {
             return (char*) str;
         }
     }
@@ -150,7 +144,7 @@ char* my_strrchr(const char* str, int c) {
 
     while (*str++) {
 
-        if (str == c) {
+        if (*str == c) {
             res = (char*) str;
         }
     }
@@ -158,49 +152,48 @@ char* my_strrchr(const char* str, int c) {
     return (char*) res;
 }
 
-size_t my_strspn(const char* str, const char* allowed) {
+size_t my_strspn(const char* str, const char* usable_symbols) {
     assert(str     != nullptr);
-    assert(allowed != nullptr);
+    assert(usable_symbols != nullptr);
 
-    size_t accepted_len = 0;
+    size_t valid_len = 0;
+    bool   is_valid     = false;
 
+    while (str[valid_len] != '\0') {
 
-    while (str[accepted_len] != '\0') {
-        bool is_valid = 0;
+        for (size_t j = 0; usable_symbols[j] != '\0'; j++) {
 
-        for (size_t j = 0; allowed[j] != '\0'; j++) {
-
-            if (str[accepted_len] == allowed[j]) {
+            if (str[valid_len] == usable_symbols[j]) {
                 is_valid = 1;
             }
         }
 
-        if (!is_valid) return accepted_len;
+        if (!is_valid) return valid_len;
 
-        accepted_len++;
+        valid_len++;
     }
 
-    return accepted_len;
+    return valid_len;
 }
 
-size_t my_strcspn(const char* str, const char* not_allowed) {
+size_t my_strcspn(const char* str, const char* banned_symbols) {
     assert(str         != nullptr);
-    assert(not_allowed != nullptr);
+    assert(banned_symbols != nullptr);
 
-    size_t accepted_len = 0;
+    size_t valid_len = 0;
 
-    while (str[accepted_len] != '\0') {
+    while (str[valid_len] != '\0') {
 
-        for (size_t j = 0; not_allowed[j] != '\0'; j++) {
+        for (size_t j = 0; banned_symbols[j] != '\0'; j++) {
 
-            if (str[accepted_len] == not_allowed[j]) {
-                return accepted_len;
+            if (str[valid_len] == banned_symbols[j]) {
+                return valid_len;
             }
         }
-        accepted_len++;
+        valid_len++;
     }
 
-    return accepted_len;
+    return valid_len;
 }
 
 char* my_fgets(char* s, int n, FILE* iop) {
@@ -221,19 +214,21 @@ int my_puts(char* str) {
     assert(str != nullptr);
 
     while (*str++) {
-        fputc(*str, stdin);
+
+        if (fputc(*str, stdout) == -1) return -1;
     }
 
-    fputc('\n', stdin);
+    fputc('\n', stdout);
 
     return 0;
 }
 
 char* my_strdup(char* s) {
     assert(s != nullptr);
+
     char* pointer = nullptr;
 
-    pointer = (char*) calloc(strlen(s)+1, sizeof(s));
+    pointer = (char*) calloc(strlen(s)+1, sizeof(char));
 
     if (pointer != nullptr) {
         my_strcpy(pointer, s);
@@ -242,29 +237,34 @@ char* my_strdup(char* s) {
     return pointer;
 }
 
+static bool IsDigit(char c) return ((c >= '0') && (c <= '9')) ? true : false;
+static size_t BoolToDigit(char c) return c - '0';
+
 int my_atoi(const char* str) {
     assert(str != nullptr);
 
-    bool is_negative = 0;
+    bool is_negative = false;
     int  res         = 0;
+    char digit       = 0;
 
     while (*str == ' ') {
         str++;
     }
 
     if (*str == '-') {
-        is_negative = 1;
+        is_negative = true;
         str++;
     }
 
     while (*str != '\0') {
-        char el = *str;
+        digit = *str;
 
-        if ((el >= '0') && (el <= '9')) {
-            res = res * 10 + el - '0';
+        if (IsDigit(digit)) {
+            res = res * 10 + BoolToDigit(digit);
         } else {
             return 0;
         }
+
         str++;
     }
 
@@ -276,12 +276,14 @@ ssize_t my_getline(char** lineptr, size_t* n, FILE* stream) {
     assert(stream  != nullptr);
     assert(n       != nullptr);
 
-    char c = 0;
-    size_t filled = 0;
+    char   c       = 0;
+    char** buf_adr = *lineptr;
+    size_t filled  = 0;
 
-    if (*lineptr == nullptr) {
-        *lineptr = (char*) calloc(100, 1);
-        *n = 100;
+    if (buf_adr == nullptr) {
+
+        if (!(buf_adr = (char*) calloc(DEFAULT_BUFF, 1))) *n = 100;
+        else return 0;
     }
 
     while ((c = fgetc(stream)) != '\n') {
@@ -289,16 +291,17 @@ ssize_t my_getline(char** lineptr, size_t* n, FILE* stream) {
         if (c == EOF) return -1;
 
         if (filled == *n) {
-            *lineptr = (char*) realloc(*lineptr, 2*filled);
-            *n *= 2;
+
+            if (!(buf_adr = (char*) realloc(buf_adr, MEMORY_MULTIPLICATION*filled))) *n *= MEMORY_MULTIPLICATION;
+            else return 0;
         }
 
-        (*lineptr)[filled] = c;
+        (buf_adr)[filled] = c;
         filled++;
     }
 
-    (*lineptr)[filled]   = '\n';
-    (*lineptr)[filled+1] = '\0';
+    buf_adr[filled]   = '\n';
+    buf_adr[filled+1] = '\0';
 
     return filled;
 
